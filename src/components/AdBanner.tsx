@@ -57,8 +57,8 @@ export function AdBanner() {
             width: '300px',
             height: '600px'
           }}
-          data-ad-client="ca-pub-YOUR_PUBLISHER_ID"
-          data-ad-slot="YOUR_AD_SLOT_ID"
+          data-ad-client="ca-pub-5776888517619723"
+          data-ad-slot="2718324183"
           data-ad-format="vertical"
           data-full-width-responsive="false"
         />
