@@ -18,24 +18,30 @@ function parseBlock(block: string): SubtitleBlock | null {
   };
 }
 
-function formatVttBlock(block: SubtitleBlock): string {
-  return `${block.number}\n${block.timestamp}\n${block.text.join('\n')}`;
+function formatVttBlock(block: SubtitleBlock, index: number): string {
+  return `${index}\n${block.timestamp}\n${block.text.join('\n')}`;
+}
+
+function cleanAndParseBlocks(content: string): SubtitleBlock[] {
+  // Remove BOM and clean content
+  const cleanContent = content.replace(/^\uFEFF/, '').trim();
+  
+  // Split into blocks and filter empty ones
+  const blocks = cleanContent.split(/\n\s*\n/)
+    .filter(block => block.trim())
+    .map(block => block.trim());
+  
+  return blocks
+    .map(block => parseBlock(block))
+    .filter((block): block is SubtitleBlock => block !== null);
 }
 
 export function srtToVtt(srtContent: string): string {
-  // Remove BOM if present
-  const cleanContent = srtContent.replace(/^\uFEFF/, '').trim();
-  
-  // Split into subtitle blocks
-  const blocks = cleanContent.split(/\n\s*\n/).filter(block => block.trim());
+  const blocks = cleanAndParseBlocks(srtContent);
   let vttContent = 'WEBVTT\n\n';
   
   blocks.forEach((block, index) => {
-    const parsedBlock = parseBlock(block);
-    if (parsedBlock) {
-      parsedBlock.number = (index + 1).toString();
-      vttContent += formatVttBlock(parsedBlock) + '\n\n';
-    }
+    vttContent += formatVttBlock(block, index + 1) + '\n\n';
   });
   
   return vttContent.trim() + '\n';
@@ -43,28 +49,14 @@ export function srtToVtt(srtContent: string): string {
 
 export function addVttNumbering(vttContent: string): string {
   // Remove any existing WEBVTT header and clean the content
-  let cleanContent = vttContent.replace(/^WEBVTT\n+/, '').trim();
+  const cleanContent = vttContent.replace(/^WEBVTT\n+/, '').trim();
+  const blocks = cleanAndParseBlocks(cleanContent);
   
-  // Split into blocks and filter out empty ones
-  const blocks = cleanContent.split(/\n\s*\n/)
-    .filter(block => block.trim())
-    .map(block => block.trim());
-  
-  // Start with WEBVTT header
   let numberedContent = 'WEBVTT\n\n';
-  let counter = 1;
   
-  // Process each block
-  for (const block of blocks) {
-    const lines = block.split('\n');
-    const timestampLineIndex = lines.findIndex(line => line.includes('-->'));
-    
-    if (timestampLineIndex !== -1) {
-      const timestampAndText = lines.slice(timestampLineIndex);
-      numberedContent += `${counter}\n${timestampAndText.join('\n')}\n\n`;
-      counter++;
-    }
-  }
+  blocks.forEach((block, index) => {
+    numberedContent += formatVttBlock(block, index + 1) + '\n\n';
+  });
   
   return numberedContent.trim() + '\n';
 }
