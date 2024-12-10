@@ -3,6 +3,7 @@ import { FileUpload } from './components/FileUpload';
 import { Preview } from './components/Preview';
 import { ActionButtons } from './components/ActionButtons';
 import { DragDropProvider } from './components/DragDropProvider';
+import { srtToVtt, addVttNumbering } from './utils/subtitleConverter';
 import { FileText } from 'lucide-react';
 import { ConversionType } from './components/ConversionType';
 import { ThemeToggle } from './components/ThemeToggle';
@@ -39,7 +40,7 @@ export default function App() {
     <DragDropProvider onFileDrop={handleFileSelect}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
         <ThemeToggle />
-        <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
               <FileText className="w-12 h-12 text-blue-600 dark:text-blue-400" />
@@ -52,35 +53,37 @@ export default function App() {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
-            <ConversionType 
-              type={conversionType} 
-              onChange={handleConversionTypeChange} 
-            />
-            <FileUpload 
-              onFileSelect={handleFileSelect}
-              acceptedFormats={conversionType === 'srtToVtt' ? '.srt' : '.vtt'}
-            />
-          </div>
-
-          {(inputContent || outputContent) && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Preview 
-                  content={inputContent} 
-                  type="input" 
-                  label={conversionType === 'srtToVtt' ? 'SRT Content' : 'VTT Content'} 
-                />
-                <Preview 
-                  content={outputContent} 
-                  type="output" 
-                  label="Output" 
-                />
-              </div>
-              
-              <ActionButtons vttContent={outputContent} onReset={handleReset} />
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+              <ConversionType 
+                type={conversionType} 
+                onChange={handleConversionTypeChange} 
+              />
+              <FileUpload 
+                onFileSelect={handleFileSelect}
+                acceptedFormats={conversionType === 'srtToVtt' ? '.srt' : '.vtt'}
+              />
             </div>
-          )}
+
+            {(inputContent || outputContent) && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Preview 
+                    content={inputContent} 
+                    type="input" 
+                    label={conversionType === 'srtToVtt' ? 'SRT Content' : 'VTT Content'} 
+                  />
+                  <Preview 
+                    content={outputContent} 
+                    type="output" 
+                    label="Output" 
+                  />
+                </div>
+                
+                <ActionButtons vttContent={outputContent} onReset={handleReset} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </DragDropProvider>

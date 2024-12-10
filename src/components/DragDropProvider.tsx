@@ -38,7 +38,7 @@ export function DragDropProvider({ children, onFileDrop }: DragDropProviderProps
     setIsDragging(false);
 
     const file = e.dataTransfer.files[0];
-    if (!file || !file.name.endsWith('.srt')) {
+    if (!file || (!file.name.endsWith('.srt') && !file.name.endsWith('.vtt'))) {
       return;
     }
 
@@ -57,8 +57,10 @@ export function DragDropProvider({ children, onFileDrop }: DragDropProviderProps
         {isDragging && (
           <div className="fixed inset-0 bg-blue-500 bg-opacity-10 pointer-events-none z-50 border-2 border-blue-500 border-dashed">
             <div className="flex items-center justify-center h-full">
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <p className="text-xl font-semibold text-blue-600">Drop your SRT file here</p>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+                  Drop your file here
+                </p>
               </div>
             </div>
           </div>
